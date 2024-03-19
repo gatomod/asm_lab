@@ -37,31 +37,51 @@ _start:
         mov     r8, char
         call    reqb
 
-    mov     r8, char
     
-
-    cmp     r8, opt1
-    je      PASS
+    mov     r10b, byte [char]
     
-    mov     r9, opt2
-    cmp     r8, r9
-    je      PASS
+    mov     r11b, byte [opt1]
     
-    mov     r9, opt3
-    cmp     r8, r9
-    je      PASS
+    mov     r11b, byte [opt1]
+    cmp     r10b, r11b
+    je      SHUTDOWN
+    
+    mov     r11b, byte [opt2]
+    cmp     r10b, r11b
+    je      REBOOT
+    
+    mov     r11b, byte [opt3]
+    cmp     r10b, r11b
+    je      EXIT
 
     jmp     BAD_INPUT
 
-    PASS:
-        mov     r8, res
-        mov     r9, res.len
-        call    print
+    mov     rax, 162     ; sync
+    syscall
 
-        mov     r8, char
-        mov     r9, 2
-        call    print
+    mov     rax, 306    ; syncfs
+    mov     rdi, 0
+    syscall
 
+    SHUTDOWN:
+        mov     rax, 169            ; reboot
+        mov     rdi, 0xfee1dead
+        mov     rsi, 0x05121996
+        mov     rdx, 0x4321fedc     ; LINUX_REBOOT_CMD_POWER_OFF
+        syscall
+
+        jmp     EXIT
+    
+    REBOOT:
+        mov     rax, 169            ; reboot
+        mov     rdi, 0xfee1dead
+        mov     rsi, 0x05121996
+        mov     rdx, 0x1234567      ; LINUX_REBOOT_CMD_RESTART
+        syscall
+
+        jmp     EXIT
+
+    EXIT:
         mov     rax, 60
         mov     rdi, 0
     syscall
