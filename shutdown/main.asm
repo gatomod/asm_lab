@@ -41,8 +41,6 @@ _start:
     mov     r10b, byte [char]
     
     mov     r11b, byte [opt1]
-    
-    mov     r11b, byte [opt1]
     cmp     r10b, r11b
     je      SHUTDOWN
     
@@ -84,4 +82,4 @@ _start:
     EXIT:
         mov     rax, 60
         mov     rdi, 0
-    syscall
+        syscall
